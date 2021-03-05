@@ -1,0 +1,19 @@
+#mysql connection details
+spring:
+  datasource:
+    username: kishore
+    password: mysql
+    url: jdbc:mysql://localhost:3306/testdb
+    platform:
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: create
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        default_schema:
+        session:
+          events:
+            log:
+              LOG_QUERIES_SLOWER_THAN_MS: 100
