@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Slf4j
-@Component
+//@Component
 @Order(1)
 public class HeaderFilter extends OncePerRequestFilter {
     @Override

@@ -7,3 +7,15 @@ server:
 logging:
   level:
     root: DEBUG
+
+springdoc:
+  packagesToScan: com.customermanagment
+  pathsToMatch: /**
+  swagger-ui:
+    path: /swagger-ui.html
+
+
+customer-management:
+  getAll: /customers/getAll
+  findById: /customers
+  error: /error

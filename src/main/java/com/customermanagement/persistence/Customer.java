@@ -20,7 +20,7 @@ public class Customer {
 
     @Id
     @Column(name = "customer_id", nullable = false)
-    private long id;
+    private Long id;
     @Column(name = "customer_name")
     private String customerName;
     @Column(name = "contact_name")

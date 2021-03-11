@@ -77,7 +77,7 @@ public class PerfProfilerAspect {
             stopWatch.stop();
             Logger logger = LoggerFactory.getLogger(tag);
             if(logLevel.equalsIgnoreCase(DEBUG) || logLevel.equalsIgnoreCase(TRACE)){
-                logger.debug("Perf: {} ms", stopWatch.getTotalTimeMillis());
+                logger.debug("{} ms", stopWatch.getTotalTimeMillis());
             }
         }
 
