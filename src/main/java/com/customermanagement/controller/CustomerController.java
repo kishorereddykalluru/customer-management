@@ -23,6 +23,8 @@ import java.util.List;
 @Tag(name = "Customer Management")
 public class CustomerController {
 
+
+
     @Autowired
     private CustomerService customerService;
 
@@ -41,7 +43,7 @@ public class CustomerController {
 
             })
     public List<CustomerDetails> getAllCustomers(){
-        return customerService.getAllCustomers().orElseThrow(() ->new RuntimeException("Customers not found"));
+        return customerService.getAllCustomers().orElseThrow(() ->new NotFoundException("Customers not found"));
     }
 
     /**

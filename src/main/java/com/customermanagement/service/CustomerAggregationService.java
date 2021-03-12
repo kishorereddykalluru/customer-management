@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -20,8 +21,9 @@ public class CustomerAggregationService {
 
     @Async("customerManagementThreadPoolExecutor")
     @PerfProfiler
-    public CompletableFuture<Customer> findCustomerById(Long id) {
-        Customer byId = customerRepository.findCustomerById(id);
-        return CompletableFuture.completedFuture(byId);
+    public CompletableFuture<List<Customer>> findCustomerById(List<Long> ids) {
+        log.info("Customer Ids Size {}" + ids.size());
+        List<Customer> customers = customerRepository.findCustomerById(ids);
+        return CompletableFuture.completedFuture(customers);
     }
 }

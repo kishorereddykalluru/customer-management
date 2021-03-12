@@ -5,9 +5,9 @@ import com.customermanagement.domain.CustomerDetails;
 import com.customermanagement.persistence.Customer;
 import com.customermanagement.persistence.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.dialect.MySQLDialect;
-import org.slf4j.MDC;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class CustomerService {
+
+    @Value("${partiton-ids.size}")
+    private int partitionSize;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -47,13 +50,15 @@ public class CustomerService {
     /**
      * Returns List of customer details based on ids passed
      *
-     * @param ids
+     * @param customerIds
      * @return
      */
     @PerfProfiler
-    public Optional<List<CustomerDetails>> getCustomersByIds(List<Long> ids) {
-        List<CompletableFuture<Customer>> collect = ids.stream().map(id ->
-                customerAggregationService.findCustomerById(id).exceptionally(e -> null)
+    public Optional<List<CustomerDetails>> getCustomersByIds(List<Long> customerIds) {
+
+        List<List<Long>> partition = ListUtils.partition(customerIds, partitionSize);
+        List<CompletableFuture<List<Customer>>> collect = partition.stream().map(ids ->
+                customerAggregationService.findCustomerById(ids).exceptionally(e -> null)
         ).collect(Collectors.toList());
 
         List<CustomerDetails> customers = createCustomers(customerDetailsResponse(collect));
@@ -64,12 +69,13 @@ public class CustomerService {
         return CollectionUtils.isEmpty(customers)? Optional.empty(): Optional.of(customers);
     }
 
-    private List<Customer> customerDetailsResponse(List<CompletableFuture<Customer>> collect) {
-        List<Customer> collect1 = collect.stream()
+    private List<Customer> customerDetailsResponse(List<CompletableFuture<List<Customer>>> collect) {
+        List<Customer> cusomers = collect.stream()
                 .map(CompletableFuture::join)
                 .filter(Objects::nonNull)
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
 
-        return collect1;
+        return cusomers;
     }
 }

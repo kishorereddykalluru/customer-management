@@ -3,10 +3,6 @@ spring:
     name: customer-management
 server:
   port: 9090
----
-logging:
-  level:
-    root: DEBUG
 
 springdoc:
   swagger-ui:
@@ -18,3 +14,6 @@ customer-management:
   getAll: /customers/getAll
   findById: /customers
   error: /error
+
+partiton-ids:
+  size: 5
