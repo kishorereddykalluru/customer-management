@@ -1,5 +1,6 @@
 package com.customermanagement.controller;
 
+import com.customermanagement.config.UriConfig;
 import com.customermanagement.domain.CustomerDetails;
 import com.customermanagement.exception.NotFoundException;
 import com.customermanagement.exception.ServiceException;
@@ -15,7 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +27,8 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
+
+import static com.customermanagement.utils.LinkUtils.buildSelfHateoasLinks;
 
 @RestController
 @Slf4j
@@ -34,6 +39,9 @@ public class CustomerController implements ErrorController {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private UriConfig uriConfig;
 
     /**
      * Endpoint to return list of all customers
@@ -50,7 +58,14 @@ public class CustomerController implements ErrorController {
 
             })
     public List<CustomerDetails> getAllCustomers(){
-        return customerService.getAllCustomers().orElseThrow(() ->new NotFoundException("Customers not found"));
+        List<CustomerDetails> customers = customerService.getAllCustomers().orElseThrow(() -> new NotFoundException("Customers not found"));
+        if(!CollectionUtils.isEmpty(customers)){
+            customers.forEach( c -> {
+                Link link = buildSelfHateoasLinks(uriConfig, c, c.getId());
+                c.add(link);
+            });
+        }
+        return customers;
     }
 
     /**
@@ -72,8 +87,9 @@ public class CustomerController implements ErrorController {
     public List<CustomerDetails> findByCustomerId(
             @Parameter(name = "ids", in = ParameterIn.QUERY, description = "Customer Id")
             @RequestParam("ids") List<Long> ids){
-        return customerService.getCustomersByIds(ids).orElseThrow(() ->new NotFoundException("Customer not found"));
+        return customerService.getCustomersByIds(ids).orElseThrow(() -> new NotFoundException("Customer not found"));
     }
+
 
     @GetMapping(value = ERROR_URL)
     @Operation(description = "error", hidden = true)

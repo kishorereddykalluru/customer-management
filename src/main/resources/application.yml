@@ -17,3 +17,6 @@ customer-management:
 
 partiton-ids:
   size: 5
+
+uri.prefix:
+  customer: /customers

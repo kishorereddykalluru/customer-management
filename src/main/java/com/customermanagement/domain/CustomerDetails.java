@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 
@@ -13,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @Schema()
-public class CustomerDetails implements Serializable {
+public class CustomerDetails extends RepresentationModel<CustomerDetails> implements Serializable {
 
     private static final long serialVersionUID = -8174621394448158907L;
     private long id;
