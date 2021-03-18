@@ -1,7 +1,7 @@
 package com.customermanagement.service;
 
 import com.customermanagement.aspect.PerfProfiler;
-import com.customermanagement.persistence.Customer;
+import com.customermanagement.persistence.entity.Customer;
 import com.customermanagement.persistence.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class CustomerAggregationService {
 
     @Async("customerManagementThreadPoolExecutor")
     @PerfProfiler
-    public CompletableFuture<List<Customer>> findCustomerById(List<Long> ids) {
+    public CompletableFuture<List<Customer>> findCustomerByIds(List<Long> ids) {
         log.info("Customer Ids Size {}" + ids.size());
         List<Customer> customers = customerRepository.findCustomerById(ids);
         return CompletableFuture.completedFuture(customers);

@@ -1,7 +1,7 @@
 package com.customermanagement.service;
 
 import com.customermanagement.domain.CustomerDetails;
-import com.customermanagement.persistence.Customer;
+import com.customermanagement.persistence.entity.Customer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +43,7 @@ class CustomerServiceTest {
     @Test
     void tesGetCustomersByIds() {
         Customer customer = Customer.builder().id(1l).customerName("Kishore").build();
-        when(customerAggregationService.findCustomerById(anyList())).thenReturn(CompletableFuture.completedFuture(List.of(customer)));
+        when(customerAggregationService.findCustomerByIds(anyList())).thenReturn(CompletableFuture.completedFuture(List.of(customer)));
         Optional<List<CustomerDetails>> customersByIds = customerService.getCustomersByIds(List.of(1l, 2l, 3l, 4l));
 
         assertTrue(customersByIds.isPresent());

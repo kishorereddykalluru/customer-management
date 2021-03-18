@@ -4,6 +4,8 @@ import com.customermanagement.config.UriConfig;
 import com.customermanagement.domain.CustomerDetails;
 import com.customermanagement.exception.NotFoundException;
 import com.customermanagement.exception.ServiceException;
+import com.customermanagement.exception.domain.ApiErrors;
+import com.customermanagement.persistence.entity.Customer;
 import com.customermanagement.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,9 +21,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -75,21 +75,72 @@ public class CustomerController implements ErrorController {
      * @return CustomerDetails list
      */
 
-    @Operation(operationId = "findByCustomerId", description = "Customers Management", summary = "Find Customers by ids.",
+    @Operation(operationId = "findByCustomerIds", description = "Customers Management", summary = "Find Customers by ids.",
                 responses =  {
                         @ApiResponse(responseCode = "200", description = "successful response received", content = @Content(schema = @Schema(implementation = CustomerDetails.class))),
-                        @ApiResponse(responseCode = "400", description = "Not Found error"),
-                        @ApiResponse(responseCode = "406", description = "Not Acceptable Error"),
-                        @ApiResponse(responseCode = "500", description = "Internale Server error")
+                        @ApiResponse(responseCode = "400", description = "Not Found error", content = @Content(schema = @Schema(implementation = ApiErrors.class))),
+                        @ApiResponse(responseCode = "406", description = "Not Acceptable Error", content = @Content(schema = @Schema(implementation = ApiErrors.class))),
+                        @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = ApiErrors.class)))
 
                 })
-    @GetMapping(value = "${customer-management.findById}")
-    public List<CustomerDetails> findByCustomerId(
+    @GetMapping(value = "${customer-management.findByIds}")
+    public List<CustomerDetails> findByCustomerIds(
             @Parameter(name = "ids", in = ParameterIn.QUERY, description = "Customer Id")
             @RequestParam("ids") List<Long> ids){
         return customerService.getCustomersByIds(ids).orElseThrow(() -> new NotFoundException("Customer not found"));
     }
 
+    /**
+     * find customer by id
+     *
+     * @param id
+     * @return CustomerDetials
+     */
+    @Operation(operationId = "findByCustomerId", description = "Customers Management", summary = "Find Customers by ids.",
+            responses =  {
+                    @ApiResponse(responseCode = "200", description = "successful response received", content = @Content(schema = @Schema(implementation = CustomerDetails.class))),
+                    @ApiResponse(responseCode = "400", description = "Not Found error", content = @Content(schema = @Schema(implementation = ApiErrors.class))),
+                    @ApiResponse(responseCode = "406", description = "Not Acceptable Error", content = @Content(schema = @Schema(implementation = ApiErrors.class))),
+                    @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = ApiErrors.class)))
+
+            })
+    @GetMapping(value = "${customer-management.findById}")
+    public CustomerDetails findByCustomerId(
+            @Parameter(name = "id", in = ParameterIn.PATH, description = "Customer Id")
+            @PathVariable("id")Long id){
+        return customerService.getCustomersById(id).orElseThrow(() -> new NotFoundException("Customer not found"));
+    }
+
+    /**
+     * add new customer to db
+     *
+     * @param customer
+     */
+    @PostMapping("${customer-management.addCustomer}")
+    public String addCustomer(@RequestBody Customer customer){
+        return customerService.addCustomer(customer);
+        //return "Customer added successfully with id "+customer.getId();
+    }
+
+    /**
+     * update customer to db
+     * @param customer
+     */
+    @PutMapping("${customer-management.updateCustomer}")
+    public String updateCustomer(@RequestBody Customer customer){
+        return customerService.updateCustomer(customer);
+        //return "Customer updated successfully with id "+customer.getId();
+    }
+
+    /**
+     * delete customer from db
+     * @param id
+     */
+    @DeleteMapping("${customer-management.deleteCustomer}")
+    public String deleteCustomer(@PathVariable("id") Long id){
+        return customerService.deleteCustomer(id);
+        //return "Customer deleted successfully with id "+id;
+    }
 
     @GetMapping(value = ERROR_URL)
     @Operation(description = "error", hidden = true)

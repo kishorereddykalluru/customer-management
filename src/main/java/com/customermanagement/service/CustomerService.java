@@ -2,7 +2,7 @@ package com.customermanagement.service;
 
 import com.customermanagement.aspect.PerfProfiler;
 import com.customermanagement.domain.CustomerDetails;
-import com.customermanagement.persistence.Customer;
+import com.customermanagement.persistence.entity.Customer;
 import com.customermanagement.persistence.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,10 @@ public class CustomerService {
     @Autowired
     private CustomerAggregationService customerAggregationService;
 
+    /**
+     * Returns all customers information present in db
+     * @return
+     */
     @PerfProfiler
     public Optional<List<CustomerDetails>> getAllCustomers(){
         List<CustomerDetails> customers = createCustomers(customerRepository.findAllCustomers());
@@ -51,14 +56,14 @@ public class CustomerService {
      * Returns List of customer details based on ids passed
      *
      * @param customerIds
-     * @return
+     * @return List of CustomerDetails
      */
     @PerfProfiler
     public Optional<List<CustomerDetails>> getCustomersByIds(List<Long> customerIds) {
 
         List<List<Long>> partition = ListUtils.partition(customerIds, partitionSize);
         List<CompletableFuture<List<Customer>>> collect = partition.stream().map(ids ->
-                customerAggregationService.findCustomerById(ids).exceptionally(e -> null)
+                customerAggregationService.findCustomerByIds(ids).exceptionally(e -> null)
         ).collect(Collectors.toList());
 
         List<CustomerDetails> customers = createCustomers(customerDetailsResponse(collect));
@@ -77,5 +82,61 @@ public class CustomerService {
                 .collect(Collectors.toList());
 
         return cusomers;
+    }
+
+    public Optional<CustomerDetails> getCustomersById(Long id) {
+
+        Customer customer = customerRepository.findById(id).orElseGet(null);
+
+        return ObjectUtils.isEmpty(customer) ? Optional.empty() : Optional.of(CustomerDetails.builder()
+                .customerName(customer.getCustomerName())
+                .contactName(customer.getContactName())
+                .id(customer.getId())
+                .country(customer.getCountry())
+                .city(customer.getCity())
+                .build());
+
+    }
+
+    /**
+     * Add customer to Data base
+     *
+     * @param customer
+     * @return
+     */
+    public String addCustomer(Customer customer) {
+        Customer save = customerRepository.save(customer);
+        if(Objects.nonNull(save))
+            return "customer saved to db successfully " + customer.getId();
+        else
+            return "Failed to save customer details";
+    }
+
+    /**
+     * Updated customer in db
+     *
+     * @param customer
+     * @return
+     */
+    public String updateCustomer(Customer customer) {
+        Customer save = customerRepository.save(customer);
+
+        return Objects.nonNull(customer) ? "Customer updated successfully "+ customer.getId(): "Failed to update Customer";
+    }
+
+    /**
+     * delete customer based on id from db
+     *
+     * @param id
+     * @return
+     */
+    public String deleteCustomer(Long id) {
+        Optional<Customer> byId = customerRepository.findById(id);
+        if(byId.isPresent()){
+            customerRepository.deleteById(id);
+            return "Customer deleted successful with id "+id;
+        } else {
+            return "Deletion unsuccessful customer not found";
+        }
     }
 }

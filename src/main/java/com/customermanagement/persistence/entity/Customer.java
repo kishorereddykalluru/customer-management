@@ -1,4 +1,4 @@
-package com.customermanagement.persistence;
+package com.customermanagement.persistence.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -12,7 +12,11 @@ springdoc:
 
 customer-management:
   getAll: /customers/getAll
-  findById: /customers
+  findByIds: /customers
+  findById: /customers/{id}
+  addCustomer: /customers
+  updateCustomer: /customers
+  deleteCustomer: /customers/{id}
   error: /error
 
 partiton-ids:
