@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -37,7 +38,17 @@ public class CustomerService {
      */
     @PerfProfiler
     public Optional<List<CustomerDetails>> getAllCustomers(){
+        //first method to retrieve employees and store in employee details
         List<CustomerDetails> customers = createCustomers(customerRepository.findAllCustomers());
+        //same way complete in single line
+        customerRepository.findAllCustomers().stream().map(customer ->
+                        CustomerDetails.builder().id(customer.getId())
+                                .customerName(customer.getCustomerName())
+                                .contactName(customer.getContactName())
+                                .city(customer.getCity())
+                                .country(customer.getCountry())
+                                .build()
+        ).collect(Collectors.toList());
         return CollectionUtils.isEmpty(customers) ? Optional.empty() :  Optional.of(customers);
     }
 
@@ -84,8 +95,16 @@ public class CustomerService {
         return cusomers;
     }
 
+    /**
+     *
+     * gets customer details by single id
+     *
+     * @param id
+     * @return customer details
+     */
+    @Cacheable("customer-management")
     public Optional<CustomerDetails> getCustomersById(Long id) {
-
+        log.info("customer id " + id);
         Customer customer = customerRepository.findById(id).orElseGet(null);
 
         return ObjectUtils.isEmpty(customer) ? Optional.empty() : Optional.of(CustomerDetails.builder()
