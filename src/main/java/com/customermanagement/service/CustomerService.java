@@ -2,12 +2,14 @@ package com.customermanagement.service;
 
 import com.customermanagement.aspect.PerfProfiler;
 import com.customermanagement.domain.CustomerDetails;
+import com.customermanagement.exception.NotFoundException;
 import com.customermanagement.persistence.entity.Customer;
 import com.customermanagement.persistence.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CustomerService {
 
+    public static final String CUSTOMER_CACHE = "customer_management";
+
     @Value("${partiton-ids.size}")
     private int partitionSize;
 
@@ -34,7 +38,7 @@ public class CustomerService {
 
     /**
      * Returns all customers information present in db
-     * @return
+     * @return list of customer details
      */
     @PerfProfiler
     public Optional<List<CustomerDetails>> getAllCustomers(){
@@ -66,7 +70,7 @@ public class CustomerService {
     /**
      * Returns List of customer details based on ids passed
      *
-     * @param customerIds
+     * @param customerIds ids to be specified
      * @return List of CustomerDetails
      */
     @PerfProfiler
@@ -99,13 +103,14 @@ public class CustomerService {
      *
      * gets customer details by single id
      *
-     * @param id
+     * @param id customer id to be specified
      * @return customer details
      */
-    @Cacheable("customer-management")
+    @Cacheable(CUSTOMER_CACHE)
     public Optional<CustomerDetails> getCustomersById(Long id) {
         log.info("customer id " + id);
-        Customer customer = customerRepository.findById(id).orElseGet(null);
+        log.info("should be executed when method is executed and request goes to repository");
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new NotFoundException("Customer not found with id " +id));
 
         return ObjectUtils.isEmpty(customer) ? Optional.empty() : Optional.of(CustomerDetails.builder()
                 .customerName(customer.getCustomerName())
@@ -120,34 +125,31 @@ public class CustomerService {
     /**
      * Add customer to Data base
      *
-     * @param customer
-     * @return
+     * @param customer customer to be saved in database
+     * @return success or failure message
      */
-    public String addCustomer(Customer customer) {
-        Customer save = customerRepository.save(customer);
-        if(Objects.nonNull(save))
-            return "customer saved to db successfully " + customer.getId();
-        else
-            return "Failed to save customer details";
+    @CachePut(cacheNames = CUSTOMER_CACHE, key = "#customer.id")
+    public Customer addCustomer(Customer customer) {
+        return customerRepository.save(customer);
+
     }
 
     /**
      * Updated customer in db
      *
-     * @param customer
-     * @return
+     * @param customer customer to be saved in database
+     * @return success or failure message
      */
-    public String updateCustomer(Customer customer) {
-        Customer save = customerRepository.save(customer);
-
-        return Objects.nonNull(customer) ? "Customer updated successfully "+ customer.getId(): "Failed to update Customer";
+    @CachePut(cacheNames = CUSTOMER_CACHE, key = "#customer.id")
+    public Customer updateCustomer(Customer customer) {
+       return customerRepository.save(customer);
     }
 
     /**
      * delete customer based on id from db
      *
-     * @param id
-     * @return
+     * @param id customer id to be specified
+     * @return success or failure message
      */
     public String deleteCustomer(Long id) {
         Optional<Customer> byId = customerRepository.findById(id);

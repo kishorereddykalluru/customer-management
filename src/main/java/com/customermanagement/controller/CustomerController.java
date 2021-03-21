@@ -117,7 +117,7 @@ public class CustomerController implements ErrorController {
      * @param customer
      */
     @PostMapping("${customer-management.addCustomer}")
-    public String addCustomer(@RequestBody Customer customer){
+    public Customer addCustomer(@RequestBody Customer customer){
         return customerService.addCustomer(customer);
         //return "Customer added successfully with id "+customer.getId();
     }
@@ -127,7 +127,7 @@ public class CustomerController implements ErrorController {
      * @param customer
      */
     @PutMapping("${customer-management.updateCustomer}")
-    public String updateCustomer(@RequestBody Customer customer){
+    public Customer updateCustomer(@RequestBody Customer customer){
         return customerService.updateCustomer(customer);
         //return "Customer updated successfully with id "+customer.getId();
     }
