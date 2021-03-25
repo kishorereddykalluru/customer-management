@@ -5,6 +5,8 @@ import com.customermanagement.domain.CustomerDetails;
 import com.customermanagement.exception.NotFoundException;
 import com.customermanagement.persistence.entity.Customer;
 import com.customermanagement.persistence.CustomerRepository;
+import com.customermanagement.utils.AsyncUtil;
+import com.customermanagement.utils.CompletableFutureUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +38,12 @@ public class CustomerService {
 
     @Autowired
     private CustomerAggregationService customerAggregationService;
+
+    @Autowired
+    private AsyncUtil asyncUtil;
+
+    @Autowired
+    private CompletableFutureUtil completableFutureUtil;
 
     /**
      * Returns all customers information present in db
@@ -159,5 +168,57 @@ public class CustomerService {
         } else {
             return "Deletion unsuccessful customer not found";
         }
+    }
+
+    /**
+     * run some parallel cases in util package
+     */
+    @PerfProfiler
+    public void completeableFutureTesting(String condition) throws ExecutionException, InterruptedException {
+        String s = null;
+        String s1 = null;
+        String s2 = null;
+        String s3 = null;
+
+        if("one".equals(condition)){
+            CompletableFuture<String> stringCompletableFuture = CompletableFuture.supplyAsync(() -> completableFutureUtil.method1());
+            s = stringCompletableFuture.get();
+        }
+        if("two".equals(condition)) {
+            CompletableFuture<String> stringCompletableFuture1 = CompletableFuture.supplyAsync(() -> completableFutureUtil.method2());
+            s1 = stringCompletableFuture1.get();
+        }
+        if("three".equals(condition)) {
+            CompletableFuture<String> stringCompletableFuture2 = CompletableFuture.supplyAsync(() -> completableFutureUtil.method3());
+            s2 = stringCompletableFuture2.get();
+        }
+        if("four".equals(condition)) {
+            CompletableFuture<String> stringCompletableFuture3 = CompletableFuture.supplyAsync(() -> completableFutureUtil.method4());
+            s3 = stringCompletableFuture3.get();
+        }
+
+
+
+        System.out.println("s = " + s);
+        System.out.println("s1 = " + s1);
+        System.out.println("s2 = " + s2);
+        System.out.println("s3 = " + s3);
+
+    }
+
+
+    @PerfProfiler
+    public void asyncTesting(String condition) throws ExecutionException, InterruptedException {
+        CompletableFuture<String> s = asyncUtil.method1();
+        CompletableFuture<String> s1 = asyncUtil.method2();
+        CompletableFuture<String> s2 = asyncUtil.method3();
+        CompletableFuture<String> s3 = asyncUtil.method4();
+
+
+        System.out.println("s = " + s.get());
+        System.out.println("s1 = " + s1.get());
+        System.out.println("s2 = " + s2.get());
+        System.out.println("s3 = " + s3.get());
+
     }
 }

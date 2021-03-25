@@ -10,7 +10,7 @@ import java.util.concurrent.Executor;
 @Configuration
 public class CustomerManagementTaskPoolExecutor {
 
-    @Value("${threadPool.customerManagement.corePoolSize: 5}")
+    @Value("${threadPool.customerManagement.corePoolSize: 2}")
     private int customerManagementCorePoolSize;
 
     @Value("${threadPool.customerManagement.maxPoolSize: 200}")

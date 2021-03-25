@@ -27,6 +27,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import static com.customermanagement.utils.LinkUtils.buildSelfHateoasLinks;
 
@@ -140,6 +141,22 @@ public class CustomerController implements ErrorController {
     public String deleteCustomer(@PathVariable("id") Long id){
         return customerService.deleteCustomer(id);
         //return "Customer deleted successfully with id "+id;
+    }
+
+    /**
+     * Testing CompletableFuture.supplyAsync and @Async annotation
+     *
+     */
+    @GetMapping("/completablefuture/{condition}")
+    public String completableFutureTest(@PathVariable("condition") String condition) throws ExecutionException, InterruptedException {
+        customerService.completeableFutureTesting(condition);
+        return "Async and CompletableFuture completed";
+    }
+
+    @GetMapping("/async/{condition}")
+    public String AsyncTest(@PathVariable("condition") String condition) throws ExecutionException, InterruptedException {
+        customerService.asyncTesting(condition);
+        return "Async and CompletableFuture completed";
     }
 
     @GetMapping(value = ERROR_URL)

@@ -20,7 +20,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customerApi(){
         return new OpenAPI().info(new Info()
-                .title("Cusotmer Management Service")
+                .title("Customer Management Service")
                 .description("Customer Management service allows user to look for list customers")
                 .version("1.0")
                 .contact(new Contact()
