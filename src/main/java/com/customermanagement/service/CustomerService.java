@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CustomerService {
 
-    public static final String CUSTOMER_CACHE = "customer_management";
+    public static final String CUSTOMER_CACHE = "customer-management";
 
     @Value("${partiton-ids.size}")
     private int partitionSize;
