@@ -41,6 +41,6 @@ public class HazelcastCacheConfig {
                 .setStatisticsEnabled(true)
                 .setEvictionConfig(new EvictionConfig()
                         .setMaxSizePolicy(MaxSizePolicy.USED_HEAP_SIZE).setEvictionPolicy(EvictionPolicy.LFU))
-                .setTimeToLiveSeconds(86400);
+                .setTimeToLiveSeconds(15);
     }
 }
