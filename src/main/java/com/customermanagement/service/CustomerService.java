@@ -115,7 +115,7 @@ public class CustomerService {
      * @param id customer id to be specified
      * @return customer details
      */
-    @Cacheable(CUSTOMER_CACHE)
+    @Cacheable("customer-cache-by-id")
     public Optional<CustomerDetails> getCustomersById(Long id) {
         log.info("customer id " + id);
         log.info("should be executed when method is executed and request goes to repository");

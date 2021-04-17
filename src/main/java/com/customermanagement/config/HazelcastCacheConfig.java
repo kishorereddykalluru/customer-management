@@ -27,6 +27,7 @@ public class HazelcastCacheConfig {
     public Map<String, MapConfig> hzCaches(){
         Map<String, MapConfig> mapConfigs = new HashMap<>();
         mapConfigs.put(customerCache().getName(), customerCache());
+        mapConfigs.put(customerCacheById().getName(), customerCacheById());
         return mapConfigs;
     }
 
@@ -41,6 +42,20 @@ public class HazelcastCacheConfig {
                 .setStatisticsEnabled(true)
                 .setEvictionConfig(new EvictionConfig()
                         .setMaxSizePolicy(MaxSizePolicy.USED_HEAP_SIZE).setEvictionPolicy(EvictionPolicy.LFU))
-                .setTimeToLiveSeconds(100);
+                .setTimeToLiveSeconds(80000);
+    }
+
+    /**
+     *
+     * Key: customerId
+     * Value: Customer
+     */
+    private MapConfig customerCacheById() {
+        return new MapConfig().setName("customer-cache-by-id")
+                .setBackupCount(1)
+                .setStatisticsEnabled(true)
+                .setEvictionConfig(new EvictionConfig()
+                        .setMaxSizePolicy(MaxSizePolicy.USED_HEAP_SIZE).setEvictionPolicy(EvictionPolicy.LFU))
+                .setTimeToLiveSeconds(80000);
     }
 }
