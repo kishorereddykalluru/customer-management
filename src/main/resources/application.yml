@@ -19,7 +19,7 @@ customer-management:
   deleteCustomer: /customers/{id}
   error: /error
 
-partiton-ids:
+partition-ids:
   size: 5
 
 uri.prefix:

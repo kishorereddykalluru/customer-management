@@ -95,7 +95,7 @@ public class CustomerController implements ErrorController {
      * find customer by id
      *
      * @param id
-     * @return CustomerDetials
+     * @return CustomerDetails
      */
     @Operation(operationId = "findByCustomerId", description = "Customers Management", summary = "Find Customers by ids.",
             responses =  {
@@ -108,7 +108,7 @@ public class CustomerController implements ErrorController {
     @GetMapping(value = "${customer-management.findById}")
     public CustomerDetails findByCustomerId(
             @Parameter(name = "id", in = ParameterIn.PATH, description = "Customer Id")
-            @PathVariable("id")Long id){
+            @PathVariable("id") Long id){
         return customerService.getCustomersById(id).orElseThrow(() -> new NotFoundException("Customer not found"));
     }
 

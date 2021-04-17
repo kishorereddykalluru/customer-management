@@ -30,7 +30,7 @@ public class CustomerService {
 
     public static final String CUSTOMER_CACHE = "customer-management";
 
-    @Value("${partiton-ids.size}")
+    @Value("${partition-ids.size}")
     private int partitionSize;
 
     @Autowired
