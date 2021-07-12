@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import static com.customermanagement.utils.LinkUtils.buildSelfHateoasLinks;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @Slf4j
@@ -105,7 +106,7 @@ public class CustomerController implements ErrorController {
                     @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(schema = @Schema(implementation = ApiErrors.class)))
 
             })
-    @GetMapping(value = "${customer-management.findById}")
+    @GetMapping(value = "${customer-management.findById}", produces = { APPLICATION_JSON_VALUE })
     public CustomerDetails findByCustomerId(
             @Parameter(name = "id", in = ParameterIn.PATH, description = "Customer Id")
             @PathVariable("id") Long id){
