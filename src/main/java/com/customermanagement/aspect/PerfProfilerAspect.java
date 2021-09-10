@@ -74,7 +74,7 @@ public class PerfProfilerAspect {
         try {
             return pjp.proceed();
         } finally {
-            stopWatch.par();
+            stopWatch.stop();
             Logger logger = LoggerFactory.getLogger(tag);
             if(logLevel.equalsIgnoreCase(DEBUG) || logLevel.equalsIgnoreCase(TRACE)){
                 logger.debug("{} ms", stopWatch.getTotalTimeMillis());
@@ -82,6 +82,4 @@ public class PerfProfilerAspect {
         }
 
     }
-
-
 }

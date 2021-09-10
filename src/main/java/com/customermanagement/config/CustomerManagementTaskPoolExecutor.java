@@ -19,6 +19,10 @@ public class CustomerManagementTaskPoolExecutor {
     @Value("${threadPool.customerManagement.keepAliveSeconds: 300}")
     private int customerManagementKeepAliveSeconds;
 
+    /**
+     * Thread pool configuration for parallel execution
+     * @return
+     */
     @Bean
     public Executor customerManagementThreadPoolExecutor(){
         ThreadPoolTaskExecutor threadPoolExecutor = new ThreadPoolTaskExecutor();
