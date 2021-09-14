@@ -10,7 +10,7 @@ spring:
     show_sql: true
     properties:
       hibernate:
-        ddl-auto: create
+        ddl-auto: update
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
         default_schema:
